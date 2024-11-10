@@ -1,0 +1,318 @@
+#!/bin/bash
+: ' R   ;%  01b6�2=]  ={�S7
+=Mn   W          8p8?%      7u)7zf-(&!
+     M5t+(X  8W_  ?    g2    B�O-4
+                       '
+           a=1; c=0
+             # comment
+        f_() { while read l; do echo $l; done < $f ; }
+                          if [[ $UID -ne 0 ]]; then
+   # comment
+    echo "Usage: sudo ./recon"
+             exit 1
+                         fi
+              i() {
+              clear
+           echo -e "\t　　　　　 ___       "
+        echo -e "\t　　　　／イ   フ    " 
+                 echo -e "\t　　　　|  _  _|     " 
+          echo -e "\t　 　 /\` ミ__xノ     ╭═════════════════════════════╮"
+            echo -e "\t　   /　　 　 |      │            RECON            │"       
+                  echo -e "\t 　 /　 ヽ　　ﾉ      │          WhizBytes          │"        
+                echo -e "\t    │　  | | |　     ╰═════════════════════════════╯"　 　
+                echo -e "\t／￣|　　| | |　     "　
+                         echo -e "\t| (￣ヽ_ヽ_)_)       "　
+               echo -e "\t＼二つ               "
+             echo
+                   }
+  i
+      o() {
+     echo -e "╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮"
+                          echo -e "│ 1. Host discovery             │ Identify live hosts on the network               │"
+                    echo -e "│ 2. OS detection               │ Determine the operating system of remote hosts   │"
+              echo -e "│ 3. Fast port scan             │ Quickly identify open ports on target systems    │"
+     echo -e "│ 4. Banner grabber             │ Capture service banners to identify versions     │"
+                   echo -e "│ 5. Subdomain enumeration      │ Discover subdomains of a target domain           │"       
+                    echo -e "│ 6. Directory enumeration      │ Find hidden directories on web servers           │"
+          echo -e "╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯"
+    echo
+     }
+     o
+                           s() {
+              echo -e "┌──[root@WhizBytes]-[RECON]"
+                 echo -ne "└─➤ "
+    read option
+                  }
+                      s
+          hd() {
+                         local target
+         local host_discovery
+                           clear
+                     echo -e "\t　　　　　 ___       "
+          echo -e "\t　　　　／イ   フ    " 
+                   echo -e "\t　　　　|  _  _|     " 
+  echo -e "\t　 　 /\` ミ__xノ     ╭═════════════════════════════╮"
+                         echo -e "\t　   /　　 　 |      │             Host            │"       
+                           echo -e "\t 　 /　 ヽ　　ﾉ      │          Discovery          │"        
+              echo -e "\t    │　  | | |　     ╰═════════════════════════════╯"　 　
+                        echo -e "\t／￣|　　| | |　     "　
+                         echo -e "\t| (￣ヽ_ヽ_)_)           Example: 192.168.1.0/24"　
+       echo -e "\t＼二つ               "
+                       echo
+                          echo -e "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+              echo
+     echo -e "┌──[root@WhizBytes]-[IP Range]"
+                       echo -ne "└─➤ "
+              read target
+    if [[ -z "${target}" ]]; then
+           echo -e "\nError: No target specified."
+          return 1
+     fi
+   if [[ ! "$cidr" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]{1,2})$ ]]; then
+                 echo -e "\nError: Invalid CIDR notation."
+                           return 2
+          fi
+                  host_discovery=$(nmap -sn "${target}")
+    echo
+       echo -e "Discovered hosts:"
+           while read -r line; do
+                      if echo "${line}" | grep -q "scan report"; then
+  echo -e "$(echo "${line}" | awk -F'for ' '{print $2}')"
+                   fi
+                 done <<< "${host_discovery}"
+                       echo
+                    }
+       os() {
+                   local target
+             local os_detection
+                          clear
+   echo -e "\t　　　　　 ___       "
+         echo -e "\t　　　　／イ   フ    " 
+    echo -e "\t　　　　|  _  _|     " 
+                  echo -e "\t　 　 /\` ミ__xノ     ╭═════════════════════════════╮"
+      echo -e "\t　   /　　 　 |      │              OS             │"       
+     echo -e "\t 　 /　 ヽ　　ﾉ      │          Detection          │"        
+            echo -e "\t    │　  | | |　     ╰═════════════════════════════╯"　 　
+                  echo -e "\t／￣|　　| | |　     "　
+       echo -e "\t| (￣ヽ_ヽ_)_)     Example: 192.168.1.1 or 192.168.1.0/24"　
+               echo -e "\t＼二つ             Note: You can separate multiple IPs with spaces"
+                    echo
+                echo -e "\t━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                         echo
+                  echo -e "┌──[root@WhizBytes]-[IP or IP Range]"
+                     echo -ne "└─➤ "
+    read target
+         if [[ -z "${target}" ]]; then
+                  echo -e "\r\nError: No target specified."
+                    return 1
+    fi
+                 if [[ "${EUID}" -ne 0 ]]; then
+   echo "\nOS Detection requires root privileges."
+                      return 2
+  fi
+         os_detection=$(sudo nmap -O ${target} -oG -)
+    while read -r line; do
+              ip=$(echo "${line}" | awk '{print $2}')
+   os=$(echo "${line}" | awk -F'OS: ' '{print $2}' | sed 's/Seq.*//g')
+                       
+           if [[ -n "${ip}" ]] && [[ -n "${os}" ]]; then
+         echo
+                         echo -e "IP: ${ip} | OS: ${os}"
+             fi
+           done <<< "${os_detection}"
+        echo
+           }
+                           fps() {
+                    local targets
+               local fast_port_scan
+                    clear
+                      echo -e "\t　　　　　 ___       "
+                          echo -e "\t　　　　／イ   フ    " 
+   echo -e "\t　　　　|  _  _|     " 
+          echo -e "\t　 　 /\` ミ__xノ     ╭═════════════════════════════╮"
+    echo -e "\t　   /　　 　 |      │             Fast            │"       
+  echo -e "\t 　 /　 ヽ　　ﾉ      │          Port Scan          │"        
+                    echo -e "\t    │　  | | |　     ╰═════════════════════════════╯"　 　
+          echo -e "\t／￣|　　| | |　     "　
+            echo -e "\t| (￣ヽ_ヽ_)_)     Example: 192.168.1.1 or 192.168.1.0/24"　
+      echo -e "\t＼二つ             Note: You can seperate multiple IPs with comma."
+                     echo
+       echo -e "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                    echo
+              echo -e "┌──[root@WhizBytes]-[IP or IP Range]"
+                         echo -ne "└─➤ "
+                read targets
+                 echo
+                  if [[ -z "${targets}" ]]; then
+                          echo -e "\r\nError: No target specified."
+             return 1
+                  fi
+    IFS=','
+  for target in $targets; do
+               fast_port_scan=$(rustscan -a "$target" -g 2>/dev/null | sed 's/^[^ ]* -> \[\(.*\)\]$/\1/' | tr ',' '\n' | awk -v ip="$target" 'BEGIN {print ip ":"} {print $1}')
+                          echo -e "${fast_port_scan}\n"
+                 done
+                   }
+                         bg() {
+      local target
+                    local port
+         local nc_bg
+      clear
+                          echo -e "\t　　　　　 ___       "
+                  echo -e "\t　　　　／イ   フ    " 
+  echo -e "\t　　　　|  _  _|     " 
+           echo -e "\t　 　 /\` ミ__xノ     ╭═════════════════════════════╮"
+                         echo -e "\t　   /　　 　 |      │           Banner            │"       
+                       echo -e "\t 　 /　 ヽ　　ﾉ      │           Grabber           │"        
+   echo -e "\t    │　  | | |　     ╰═════════════════════════════╯"　 　
+           echo -e "\t／￣|　　| | |　     "　
+                   echo -e "\t| (￣ヽ_ヽ_)_)           Example: 192.168.1.1 21"　
+                           echo -e "\t＼二つ               "
+           echo
+                     echo -e "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo
+    echo -e "┌──[root@WhizBytes]-[IP]"
+                   echo -ne "└─➤ "
+                          read target
+                      if [[ -z "${target}" ]]; then
+     echo -e "\r\nError: No IP specified."
+                       return 1
+                   fi
+               if [[ ! "${target}" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+                       echo "\nError: Invalid IP address format: ${target}"
+                           return 2
+                   fi
+            echo -e "┌──[root@WhizBytes]-[Port]"
+              echo -ne "└─➤ "
+       read port
+                  if [[ -z "${port}" ]]; then
+                echo -e "\r\nError: No port specified."
+                 return 3
+        fi
+        if [[ ! "$port" =~ ^[0-9]+$ ]]; then
+                    echo "\n\tError: Invalid port number format."
+                           return 4
+                fi
+                    if ! [ "$port" -ge 1 ] || ! [ "$port" -le 65535 ]; then
+       echo "\nError: Port must be between 1 and 65535."
+          return 5
+                        fi
+              nc_bg=$(echo -e "\n" | nc -v -w 1 "${target}" "${port}" 2> /dev/null)
+   echo
+       echo -e "Target: ${target} | Port: ${port}\n"
+      if [[ -n "${nc_bg}" ]]; then
+            echo -e "Banner: ${nc_bg}"
+   fi		
+   }
+                se() {
+           local target
+                local wordlist
+               clear
+     echo -e "\t　　　　　 ___       "
+       echo -e "\t　　　　／イ   フ    " 
+                           echo -e "\t　　　　|  _  _|     " 
+                  echo -e "\t　 　 /\` ミ__xノ     ╭═════════════════════════════╮"
+            echo -e "\t　   /　　 　 |      │          Subdomain          │"       
+             echo -e "\t 　 /　 ヽ　　ﾉ      │         Enumeration         │"        
+                echo -e "\t    │　  | | |　     ╰═════════════════════════════╯"　 　
+                 echo -e "\t／￣|　　| | |　     "　
+                       echo -e "\t| (￣ヽ_ヽ_)_)     Example: example.com /home/user/wordlist.txt"　
+                        echo -e "\t＼二つ             Note: Use absolute path for wordlist."
+               echo
+                   echo -e "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+             echo
+                        echo -e "┌──[root@WhizBytes]-[Domain]"
+               echo -ne "└─➤ "
+                   read target
+                      if [[ ! "$target" =~ ^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
+  echo "Error: Invalid domain format."
+                  return 1
+            fi
+                echo -e "┌──[root@WhizBytes]-[Wordlist]"
+                   echo -ne "└─➤ "
+             read wordlist
+          wordlist="${wordlist/#\~/$HOME}"
+                         
+                     if [[ ! -e "$wordlist" ]]; then
+                        echo "Error: The path does not exist."
+                return 2
+  fi
+          if [[ ! -f "$wordlist" ]]; then
+                        echo "Error: The path is not a file."
+                  return 3
+                     fi
+                   if [[ ! -r "$wordlist" ]]; then
+          echo "Error: The file is not readable."
+                return 4
+                       fi
+                         echo -e "\nTarget: ${target} | Wordlist: ${wordlist}\n"
+                       
+           gobuster dns -d "$target" -w "$wordlist" -q --no-color
+                        }
+                     
+   de() {
+          local target
+                         local wordlist
+               clear
+                  echo -e "\t　　　　　 ___       "
+             echo -e "\t　　　　／イ   フ    " 
+                  echo -e "\t　　　　|  _  _|     " 
+      echo -e "\t　 　 /\` ミ__xノ     ╭═════════════════════════════╮"
+                          echo -e "\t　   /　　 　 |      │          Directory          │"       
+           echo -e "\t 　 /　 ヽ　　ﾉ      │         Enumeration         │"        
+             echo -e "\t    │　  | | |　     ╰═════════════════════════════╯"　 　
+        echo -e "\t／￣|　　| | |　     "　
+              echo -e "\t| (￣ヽ_ヽ_)_)   Example: http://example.com /home/user/wordlist.txt"　
+     echo -e "\t＼二つ           Note: Use absolute path for wordlist."
+               echo
+             echo -e "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+              echo
+                          echo -e "┌──[root@WhizBytes]-[Domain]"
+   echo -ne "└─➤ "
+         read target
+         if [[ ! "$target" =~ ^https?://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(/[^ ]*)?$ ]]; then
+            echo "Error: Invalid domain format."
+                          return 1
+              fi
+               echo -e "┌──[root@WhizBytes]-[Wordlist]"
+    echo -ne "└─➤ "
+  read wordlist
+                       wordlist="${wordlist/#\~/$HOME}"
+       
+                  if [[ ! -e "$wordlist" ]]; then
+   echo "Error: The path does not exist."
+                  return 2
+                       fi
+                        if [[ ! -f "$wordlist" ]]; then
+                       echo "Error: The path is not a file."
+              return 3
+  fi
+                   if [[ ! -r "$wordlist" ]]; then
+               echo "Error: The file is not readable."
+                       return 4
+                         fi
+        echo -e "\nTarget: ${target} | Wordlist: ${wordlist}\n"
+                 
+                         gobuster dir -u "$target" -w "$wordlist" -t 4 --delay 1s -q --no-color
+                   }
+                   case "$option" in
+            1) hd
+         ;;
+  2) os
+                       ;;
+                 3) fps
+                       ;;
+        4) bg
+         ;;
+        5) se
+                    ;;
+    6) de
+                        ;;
+                        *) echo -e "\nError: Invalid option."
+           exit 1
+          ;;
+               esac
+: ' R   ;%  01b6�2=]  ={�S7
+=Mn   W          8p8?%      7u)7zf-(&!
+     M5t+(X  8W_  ?    g2    B�O-4
+                       '
